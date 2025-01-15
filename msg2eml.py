@@ -1,5 +1,7 @@
 #!/usr/local/bin/python3
 
+# Код рабочий, запускать из под venv == msg2eml, который лежит в папке ~/.virtualvenvs
+
 # Referencecs:
 
 # https://msdn.microsoft.com/en-us/library/cc463912.aspx
@@ -18,7 +20,26 @@ from email.utils import parsedate_to_datetime, formatdate, formataddr
 
 import compoundfiles
 
+# NEW PART OF CODE
 
+import tkinter as tk
+from tkinter import filedialog
+import os
+
+def convert_msg_to_eml():
+    # Открываем диалоговое окно для выбора файла .msg
+    msg_file = filedialog.askopenfilename(filetypes=[("MSG files", "*.msg")])
+    if msg_file:
+        # Загружаем .msg файл и конвертируем его в .eml
+        msg = load(msg_file)
+        eml_file = os.path.splitext(msg_file)[0] + ".eml"
+        with open(eml_file, "wb") as f:
+            f.write(msg.as_bytes())
+        
+        # Выводим сообщение об успешной конвертации
+        result_label.config(text=f"Файл {os.path.basename(eml_file)} успешно сохранен!")
+
+# OLD PART OF CODE
 # MAIN FUNCTIONS
 
 
@@ -790,7 +811,7 @@ property_tags = {
 
 # COMMAND-LINE ENTRY POINT
 
-
+"""
 if __name__ == "__main__":
   # If no command-line arguments are given, convert the .msg
   # file on STDIN to .eml format on STDOUT.
@@ -806,3 +827,20 @@ if __name__ == "__main__":
       msg = load(fn)
       with open(fn + ".eml", "wb") as f:
         f.write(msg.as_bytes())
+"""
+
+# NEW PART OF CODE
+# Создаем главное окно приложения
+root = tk.Tk()
+root.title("MSG to EML Converter")
+
+# Создаем кнопку для запуска конвертации
+convert_button = tk.Button(root, text="Конвертировать .MSG в .EML", command=convert_msg_to_eml)
+convert_button.pack(pady=20)
+
+# Создаем метку для вывода результата конвертации
+result_label = tk.Label(root, text="")
+result_label.pack(pady=10)
+
+# Запускаем главный цикл приложения
+root.mainloop()
